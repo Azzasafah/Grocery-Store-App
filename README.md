@@ -203,6 +203,3 @@ Content-Type: application/json
 
 ---
 
-
-
-Just say the word.
