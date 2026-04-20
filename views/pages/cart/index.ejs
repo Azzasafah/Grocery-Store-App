@@ -1,0 +1,170 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+  <div>
+    <h1>🛒 Keranjang Belanja</h1>
+    <p>Kelola isi keranjang kamu di sini</p>
+  </div>
+  <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+    <% if (cartId) { %>
+      <form method="POST" action="/cart/clear" data-confirm="Reset keranjang? Cart ID akan dihapus dari session.">
+        <button type="submit" class="btn btn-secondary">🗑️ Reset Cart</button>
+      </form>
+    <% } %>
+    <form method="POST" action="/cart/create">
+      <button type="submit" class="btn btn-primary">➕ Buat Cart Baru</button>
+    </form>
+  </div>
+</div>
+
+<div class="info-box">
+  <p><code>POST /carts</code> → Membuat cart baru, API akan mengembalikan <strong>cartId</strong> unik.</p>
+  <p>Cart ID disimpan di <strong>session</strong> server supaya bisa dipakai di request berikutnya.</p>
+</div>
+
+<% if (!cartId) { %>
+  <!-- Belum ada keranjang -->
+  <div class="empty-state">
+    <div class="empty-icon">🛒</div>
+    <h3>Belum Ada Keranjang</h3>
+    <p>Klik tombol "Buat Cart Baru" untuk memulai belanja!</p>
+    <form method="POST" action="/cart/create">
+      <button type="submit" class="btn btn-primary btn-lg">➕ Buat Cart Baru</button>
+    </form>
+  </div>
+
+<% } else { %>
+
+  <!-- Info Cart ID -->
+  <div class="card" style="margin-bottom:1.5rem; border-left:4px solid var(--green);">
+    <div class="card-body" style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+      <div style="flex:1;">
+        <div class="detail-label">Cart ID (aktif di session)</div>
+        <div class="detail-value" style="font-family:monospace; color:var(--green-dark); font-size:1rem;"><%= cartId %></div>
+      </div>
+      <div>
+        <div class="detail-label">Jumlah Item</div>
+        <div class="detail-value"><%= items.length %> produk</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Tambah Item Manual -->
+  <div class="card" style="margin-bottom:1.5rem;">
+    <div class="card-header">
+      <h3>➕ Tambah Item ke Keranjang</h3>
+    </div>
+    <div class="card-body">
+      <div class="info-box" style="margin-bottom:1rem;">
+        <p>Endpoint: <code>POST /carts/<%= cartId %>/items</code></p>
+        <p>Body yang dikirim: <code>{"productId": 4646, "quantity": 1}</code></p>
+      </div>
+      <form method="POST" action="/cart/items" style="display:flex; gap:1rem; flex-wrap:wrap; align-items:stretch;">
+        <div class="form-group" style="margin:0; flex:1; min-width:160px;">
+          <label class="form-label">Product ID</label>
+          <input type="number" name="productId" class="form-control" placeholder="Contoh: 4646" required>
+          <div class="form-hint">Lihat ID produk di halaman <a href="/products">Produk</a></div>
+        </div>
+        <div class="form-group" style="margin:0; width:100px;">
+          <label class="form-label">Jumlah</label>
+          <input type="number" name="quantity" value="1" min="1" max="99" class="form-control">
+        </div>
+        <div style="display:flex; flex-direction:column; justify-content:flex-end;">
+          <button type="submit" class="btn btn-primary">🛒 Tambah</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Isi Keranjang -->
+  <% if (items.length === 0) { %>
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>Keranjang Masih Kosong</h3>
+      <p>Tambahkan produk dari form di atas atau <a href="/products">lihat semua produk</a>.</p>
+    </div>
+  <% } else { %>
+    <div class="card">
+      <div class="card-header">
+        <h3>🛍️ Item dalam Keranjang</h3>
+        <span style="font-size:0.85rem; color:var(--gray-400);"><%= items.length %> item</span>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Item ID</th>
+              <th>Product ID</th>
+              <th>Quantity</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% items.forEach(item => { %>
+            <tr>
+              <td><code style="font-size:0.78rem;"><%= item.id %></code></td>
+              <td><code><%= item.productId %></code></td>
+              <td>
+                <!-- PATCH: Update Quantity -->
+                <form method="POST" action="/cart/items/<%= item.id %>?_method=PATCH" style="display:flex; gap:6px; align-items:center;">
+                  <input type="number" name="quantity" value="<%= item.quantity %>" min="1" max="99"
+                    class="form-control" style="width:70px; padding:4px 8px; font-size:0.85rem;">
+                  <button type="submit" class="btn btn-warning btn-sm" title="Update Jumlah">✏️</button>
+                </form>
+              </td>
+              <td style="display:flex; gap:6px; flex-wrap:wrap; padding-top:0.75rem;">
+                <!-- Replace Product (PUT) -->
+                <button class="btn btn-info btn-sm" onclick="toggleReplaceForm('<%= item.id %>')" title="Ganti Produk">🔄 Ganti</button>
+                <!-- DELETE -->
+                <form method="POST" action="/cart/items/<%= item.id %>?_method=DELETE"
+                  data-confirm="Hapus item ini dari keranjang?">
+                  <button type="submit" class="btn btn-danger btn-sm">🗑️ Hapus</button>
+                </form>
+              </td>
+            </tr>
+            <!-- Replace Form (tersembunyi, muncul saat klik Ganti) -->
+            <tr id="replace-<%= item.id %>" style="display:none; background:var(--orange-light);">
+              <td colspan="5">
+                <div style="padding:0.5rem;">
+                  <div class="info-box" style="margin-bottom:0.5rem;">
+                    <strong>📚 PUT</strong>: Ganti seluruh item (productId + quantity baru)
+                    — Endpoint: <code>PUT /carts/<%= cartId %>/items/<%= item.id %></code>
+                  </div>
+                  <form method="POST" action="/cart/items/<%= item.id %>?_method=PUT"
+                    style="display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap;">
+                    <div class="form-group" style="margin:0; flex:1; min-width:140px;">
+                      <label class="form-label">Product ID Baru</label>
+                      <input type="number" name="productId" class="form-control" placeholder="Product ID baru" required>
+                    </div>
+                    <div class="form-group" style="margin:0; width:90px;">
+                      <label class="form-label">Quantity</label>
+                      <input type="number" name="quantity" value="1" min="1" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-orange">🔄 Ganti Produk</button>
+                    <button type="button" class="btn btn-secondary" onclick="toggleReplaceForm('<%= item.id %>')">Batal</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Checkout -->
+    <div style="margin-top:1.5rem; text-align:right;">
+      <a href="/orders/new" class="btn btn-primary btn-lg">📦 Lanjut ke Checkout →</a>
+    </div>
+  <% } %>
+
+<% } %>
+
+<script>
+function toggleReplaceForm(itemId) {
+  const row = document.getElementById('replace-' + itemId);
+  row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+}
+</script>
+
+<%- include('../../partials/footer') %>

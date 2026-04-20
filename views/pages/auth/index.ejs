@@ -1,0 +1,90 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+  <h1>🔑 Autentikasi & Access Token</h1>
+  <p>Daftar sebagai API client untuk mendapatkan token akses</p>
+</div>
+
+<div class="info-box">
+  <p>Endpoint <strong>Order</strong> memerlukan autentikasi. Kamu harus daftar dulu sebagai API client, nanti dapat <strong>accessToken</strong> yang dipakai sebagai <code>Authorization: Bearer &lt;token&gt;</code> di header request.</p>
+  <p style="margin-top:4px;">Token disimpan di <strong>session</strong> server, jadi kamu tidak perlu copy-paste terus.</p>
+</div>
+
+<!-- Status Token Saat Ini -->
+<div class="card" style="margin-bottom:1.5rem; border-left:4px solid <%= currentToken ? 'var(--green)' : 'var(--yellow)' %>;">
+  <div class="card-header">
+    <h3>🎫 Status Token Saat Ini</h3>
+  </div>
+  <div class="card-body">
+    <% if (currentToken) { %>
+      <div class="alert alert-success">✅ Token aktif — kamu bisa mengakses endpoint Order!</div>
+      <div class="detail-label">Access Token (tersimpan di session)</div>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:6px;">
+        <code style="background:var(--gray-900); color:#86efac; padding:8px 14px; border-radius:8px; font-size:0.82rem; flex:1; word-break:break-all;"><%= currentToken %></code>
+        <form method="POST" action="/auth/clear">
+          <button type="submit" class="btn btn-danger btn-sm">🗑️ Hapus Token</button>
+        </form>
+      </div>
+    <% } else { %>
+      <div class="alert alert-warning">⚠️ Belum ada token. Daftar di bawah atau masukkan token manual.</div>
+    <% } %>
+  </div>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+
+  <!-- Form Registrasi -->
+  <div class="card">
+    <div class="card-header">
+      <h3>📝 Daftar API Client Baru</h3>
+    </div>
+    <div class="card-body">
+      <div class="info-box" style="margin-bottom:1rem;">
+        <h4>📚 Endpoint yang dipakai:</h4>
+        <code class="code-block">POST /api-clients</code>
+        <p style="margin-top:6px; font-size:0.82rem;">Body: <code>{"clientName": "...", "clientEmail": "..."}</code></p>
+        <p style="font-size:0.82rem; margin-top:4px;">⚠️ Email harus unik! Jika sudah dipakai, akan error.</p>
+      </div>
+      <form method="POST" action="/auth/register">
+        <div class="form-group">
+          <label class="form-label">Nama Client</label>
+          <input type="text" name="clientName" class="form-control"
+            placeholder="Contoh: Budi di Laptop Kantor" required>
+          <div class="form-hint">Boleh nama apa saja</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Client</label>
+          <input type="email" name="clientEmail" class="form-control"
+            placeholder="Contoh: budi123@example.com" required>
+          <div class="form-hint">⚠️ Harus unik, belum pernah didaftarkan</div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">🔑 Daftar & Dapatkan Token</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Set Token Manual -->
+  <div class="card">
+    <div class="card-header">
+      <h3>⚙️ Set Token Manual</h3>
+    </div>
+    <div class="card-body">
+      <div class="info-box" style="margin-bottom:1rem;">
+        <h4>📚 Kapan dipakai?</h4>
+        <p>Jika kamu sudah punya token dari sebelumnya (misalnya dari Postman atau Katalon), kamu bisa langsung paste di sini tanpa daftar ulang.</p>
+      </div>
+      <form method="POST" action="/auth/set-token">
+        <div class="form-group">
+          <label class="form-label">Access Token</label>
+          <textarea name="accessToken" class="form-control" rows="5"
+            placeholder="Paste token kamu di sini..." required></textarea>
+          <div class="form-hint">Token akan disimpan di session server</div>
+        </div>
+        <button type="submit" class="btn btn-orange btn-block">💾 Simpan Token</button>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<%- include('../../partials/footer') %>

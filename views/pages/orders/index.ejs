@@ -1,0 +1,70 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+  <div>
+    <h1>📦 Semua Pesanan</h1>
+    <p>Daftar pesanan yang terhubung dengan token kamu</p>
+  </div>
+  <a href="/orders/new" class="btn btn-primary">➕ Buat Pesanan</a>
+</div>
+
+<div class="info-box">
+  <p>Endpoint: <code>GET /orders</code> — Memerlukan header <code>Authorization: Bearer &lt;token&gt;</code></p>
+  <p>Pesanan yang tampil hanya milik token kamu. Token lain tidak bisa melihat pesanan ini.</p>
+</div>
+
+<% if (!orders || orders.length === 0) { %>
+  <div class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>Belum Ada Pesanan</h3>
+    <p>Buat pesanan pertamamu! Pastikan sudah punya Cart dan Access Token.</p>
+    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+      <a href="/orders/new" class="btn btn-primary">📦 Buat Pesanan</a>
+      <a href="/cart" class="btn btn-secondary">🛒 Kelola Keranjang</a>
+    </div>
+  </div>
+<% } else { %>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Cart ID</th>
+          <th>Komentar</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orders.forEach(order => { %>
+        <tr>
+          <td>
+            <code style="font-size:0.78rem;"><%= order.id %></code>
+          </td>
+          <td><strong><%= order.customerName || '-' %></strong></td>
+          <td><code style="font-size:0.78rem;"><%= order.cartId || '-' %></code></td>
+        <td>
+            <% if (order.comment) { %>
+              <%= order.comment %>
+            <% } else { %>
+              <em>Tidak ada komentar</em>
+            <% } %>
+          </td>
+          <td>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <a href="/orders/<%= order.id %>" class="btn btn-secondary btn-sm">🔍 Detail</a>
+              <a href="/orders/<%= order.id %>/edit" class="btn btn-warning btn-sm">✏️ Edit</a>
+              <form method="POST" action="/orders/<%= order.id %>?_method=DELETE"
+                data-confirm="Hapus pesanan ini? Tindakan ini tidak bisa dibatalkan!">
+                <button type="submit" class="btn btn-danger btn-sm">🗑️ Hapus</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<%- include('../../partials/footer') %>

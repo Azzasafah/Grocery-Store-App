@@ -1,0 +1,103 @@
+<%- include('../partials/header') %>
+
+<div class="page-header">
+  <h1>🛒 Selamat Datang di Grocery Store!</h1>
+  <p>Project Express.js MVC — belajar API dengan cara yang menyenangkan</p>
+</div>
+
+<!-- API Status -->
+<div class="stats-row" style="margin-bottom: 1.5rem;">
+  <div class="stat-box">
+    <div class="stat-icon green">🌐</div>
+    <div class="stat-info">
+      <div class="stat-value" style="font-size:1rem; color: <%= apiStatus.status === 'UP' ? 'var(--green-dark)' : 'var(--red)' %>">
+        <%= apiStatus.status === 'UP' ? '✅ ONLINE' : '❌ OFFLINE' %>
+      </div>
+      <div class="stat-label">Status API Eksternal</div>
+    </div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-icon orange">🗺️</div>
+    <div class="stat-info">
+      <div class="stat-value" style="font-size:0.9rem;">MVC Pattern</div>
+      <div class="stat-label">Model → View → Controller</div>
+    </div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-icon blue">🔄</div>
+    <div class="stat-info">
+      <div class="stat-value" style="font-size:0.9rem;">nodemon</div>
+      <div class="stat-label">Auto-reload aktif (dev mode)</div>
+    </div>
+  </div>
+</div>
+
+<!-- Fitur / Menu Navigasi -->
+<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:1.25rem;">
+
+  <a href="/products" style="text-decoration:none;">
+    <div class="card" style="padding:1.5rem; text-align:center;">
+      <div style="font-size:3rem; margin-bottom:0.75rem;">🥦</div>
+      <h3 style="font-family:'Poppins',sans-serif; font-weight:700; margin-bottom:4px;">Produk</h3>
+      <p style="font-size:0.85rem; color:var(--gray-400);">Lihat semua produk, filter kategori, lihat detail</p>
+    </div>
+  </a>
+
+  <a href="/cart" style="text-decoration:none;">
+    <div class="card" style="padding:1.5rem; text-align:center;">
+      <div style="font-size:3rem; margin-bottom:0.75rem;">🛒</div>
+      <h3 style="font-family:'Poppins',sans-serif; font-weight:700; margin-bottom:4px;">Keranjang</h3>
+      <p style="font-size:0.85rem; color:var(--gray-400);">Buat keranjang, tambah, update, hapus item</p>
+    </div>
+  </a>
+
+  <a href="/auth" style="text-decoration:none;">
+    <div class="card" style="padding:1.5rem; text-align:center;">
+      <div style="font-size:3rem; margin-bottom:0.75rem;">🔑</div>
+      <h3 style="font-family:'Poppins',sans-serif; font-weight:700; margin-bottom:4px;">Auth & Token</h3>
+      <p style="font-size:0.85rem; color:var(--gray-400);">Daftar API client, dapatkan Access Token</p>
+    </div>
+  </a>
+
+  <a href="/orders" style="text-decoration:none;">
+    <div class="card" style="padding:1.5rem; text-align:center;">
+      <div style="font-size:3rem; margin-bottom:0.75rem;">📦</div>
+      <h3 style="font-family:'Poppins',sans-serif; font-weight:700; margin-bottom:4px;">Pesanan</h3>
+      <p style="font-size:0.85rem; color:var(--gray-400);">Buat, lihat, edit, dan hapus pesanan</p>
+    </div>
+  </a>
+
+</div>
+
+<!-- Struktur Proyek -->
+<div class="card" style="margin-top:1.5rem;">
+  <div class="card-header">
+    <h3>📁 Struktur Project MVC</h3>
+  </div>
+  <div class="card-body">
+    <pre style="font-family:'Courier New',monospace; font-size:0.82rem; line-height:1.8; color:var(--gray-700); overflow-x:auto;">grocery-store-app/
+├── app.js                 ← Entry point server
+├── models/                ← DATA LAYER (panggil API)
+│   ├── apiConfig.js       ← Konfigurasi axios
+│   ├── productModel.js    ← Logic produk
+│   ├── cartModel.js       ← Logic keranjang
+│   ├── orderModel.js      ← Logic pesanan
+│   └── authModel.js       ← Logic autentikasi
+├── controllers/           ← BUSINESS LOGIC
+│   ├── productController.js
+│   ├── cartController.js
+│   ├── orderController.js
+│   └── authController.js
+├── routes/                ← URL MAPPING
+│   ├── productRoutes.js
+│   ├── cartRoutes.js
+│   ├── orderRoutes.js
+│   └── authRoutes.js
+├── views/                 ← TAMPILAN (EJS)
+│   ├── partials/
+│   └── pages/
+└── public/                ← Static Files (CSS, JS)</pre>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

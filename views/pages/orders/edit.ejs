@@ -1,0 +1,44 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+  <a href="/orders" class="btn btn-secondary btn-sm" style="margin-bottom:1rem;">← Kembali ke Pesanan</a>
+  <h1>✏️ Edit Pesanan</h1>
+  <p>Update komentar pada pesanan ini</p>
+</div>
+
+<div class="info-box">
+  <p>Endpoint: <code>PATCH /orders/<%= order.id %></code></p>
+  <p>Body: <code>{"comment": "..."}</code> — Hanya mengubah field <code>comment</code>, bukan seluruh data pesanan.</p>
+  <p><strong>Perbedaan PATCH vs PUT:</strong> PATCH = update sebagian field. PUT = ganti seluruh resource.</p>
+</div>
+
+<div style="max-width:560px;">
+  <div class="card">
+    <div class="card-header">
+      <h3>📋 Edit Komentar Pesanan</h3>
+    </div>
+    <div class="card-body">
+      <div style="background:var(--gray-50); border-radius:8px; padding:1rem; margin-bottom:1.25rem; font-size:0.85rem;">
+        <div class="detail-label">Order ID</div>
+        <code><%= order.id %></code>
+        <div class="detail-label" style="margin-top:8px;">Customer</div>
+        <strong><%= order.customerName %></strong>
+      </div>
+
+      <form method="POST" action="/orders/<%= order.id %>?_method=PATCH">
+        <div class="form-group">
+          <label class="form-label">Komentar / Catatan</label>
+          <textarea name="comment" class="form-control" rows="4"
+            placeholder="Contoh: Pickup at 2PM. Tolong bawa kantong extra."><%= order.comment || '' %></textarea>
+          <div class="form-hint">Catatan untuk pesanan ini (opsional)</div>
+        </div>
+        <div style="display:flex; gap:1rem;">
+          <button type="submit" class="btn btn-warning">💾 Simpan Perubahan</button>
+          <a href="/orders" class="btn btn-secondary">Batal</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

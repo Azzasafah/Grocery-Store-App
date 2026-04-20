@@ -1,0 +1,104 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+  <a href="/products" class="btn btn-secondary btn-sm" style="margin-bottom:1rem;">← Kembali ke Produk</a>
+  <h1><%= product.name %></h1>
+  <p>Detail lengkap produk dari API</p>
+</div>
+
+<div class="info-box">
+  <p>Endpoint: <code>GET /products/<%= product.id %></code> — Ini adalah pola RESTful untuk mengambil satu data spesifik berdasarkan ID.</p>
+</div>
+
+<div class="detail-grid">
+
+  <!-- Gambar / Emoji Produk -->
+  <div class="card" style="text-align:center; padding:2rem;">
+    <%
+      const emojis = {
+        'fresh-produce': '🥦',
+        'meat-seafood':  '🥩',
+        'dairy':         '🥛',
+        'bread-bakery':  '🍞',
+        'beverages':     '🧃',
+        'coffee':        '☕',
+        'candy':         '🍬'
+      };
+      const emoji = emojis[product.category] || '🛒';
+    %>
+    <div style="font-size:6rem; margin-bottom:1rem;"><%= emoji %></div>
+    <div style="font-size:0.78rem; color:var(--gray-400); font-weight:600; text-transform:uppercase;">Product ID</div>
+    <div style="font-family:'Poppins',sans-serif; font-size:1.5rem; font-weight:800; color:var(--green-dark);"><%= product.id %></div>
+
+    <% if (cartId) { %>
+      <form method="POST" action="/cart/items" style="margin-top:1.5rem;">
+        <input type="hidden" name="productId" value="<%= product.id %>">
+        <div class="form-group">
+          <label class="form-label">Jumlah</label>
+          <input type="number" name="quantity" value="1" min="1" max="99" class="form-control" style="text-align:center;">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" <%= !product.inStock ? 'disabled' : '' %>>
+          🛒 <%= product.inStock ? 'Tambah ke Keranjang' : 'Stok Habis' %>
+        </button>
+      </form>
+    <% } else { %>
+      <div class="alert alert-info" style="margin-top:1.5rem;">
+        <a href="/cart">Buat keranjang dulu</a> untuk menambah produk ini.
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Detail Info -->
+  <div class="card">
+    <div class="card-header">
+      <h3>📋 Informasi Produk</h3>
+      <% if (product.inStock) { %>
+        <span class="stock-badge in-stock">✅ Tersedia</span>
+      <% } else { %>
+        <span class="stock-badge out-of-stock">❌ Stok Habis</span>
+      <% } %>
+    </div>
+    <div class="card-body">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+        <div>
+          <div class="detail-label">Nama Produk</div>
+          <div class="detail-value"><%= product.name %></div>
+        </div>
+        <div>
+          <div class="detail-label">Kategori</div>
+          <div class="detail-value"><%= product.category %></div>
+        </div>
+        <div>
+          <div class="detail-label">Harga</div>
+          <div class="detail-value" style="color:var(--green-dark); font-size:1.3rem;">
+            $<%= product.price ? product.price.toFixed(2) : 'N/A' %>
+          </div>
+        </div>
+        <div>
+          <div class="detail-label">Ketersediaan</div>
+          <div class="detail-value"><%= product.inStock ? 'Ada di stok' : 'Habis' %></div>
+        </div>
+        <% if (product.manufacturer) { %>
+        <div>
+          <div class="detail-label">Produsen</div>
+          <div class="detail-value"><%= product.manufacturer %></div>
+        </div>
+        <% } %>
+        <% if (product['current-stock']) { %>
+        <div>
+          <div class="detail-label">Sisa Stok</div>
+          <div class="detail-value"><%= product['current-stock'] %> unit</div>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- Raw JSON untuk edukasi -->
+      <div style="margin-top:1.5rem;">
+        <div class="detail-label">📦 Raw Response dari API (untuk belajar)</div>
+        <pre style="background:var(--gray-900); color:#86efac; padding:1rem; border-radius:8px; font-size:0.78rem; overflow-x:auto; margin-top:6px;"><%= JSON.stringify(product, null, 2) %></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

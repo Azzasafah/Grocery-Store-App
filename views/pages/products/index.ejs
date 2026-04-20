@@ -1,0 +1,98 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+  <div>
+    <h1>🥦 Semua Produk</h1>
+    <p>Menampilkan <%= products.length %> produk dari API</p>
+  </div>
+</div>
+
+<div class="info-box">
+  <p>Endpoint ini: <code>GET /products?category=fresh-produce&results=10</code></p>
+  <p>Di Katalon, kamu bisa tes dengan menambahkan query parameter di URL. Coba ganti kategori atau jumlah hasil!</p>
+</div>
+
+<!-- Filter Bar -->
+<form method="GET" action="/products" class="filter-bar">
+  <div class="form-group" style="margin:0; flex:1; min-width:150px;">
+    <label class="form-label">Kategori</label>
+    <select name="category" class="form-control">
+      <option value="">-- Semua Kategori --</option>
+      <option value="fresh-produce"    <%= selectedCategory === 'fresh-produce'    ? 'selected' : '' %>>🥦 Fresh Produce</option>
+      <option value="meat-seafood"     <%= selectedCategory === 'meat-seafood'     ? 'selected' : '' %>>🥩 Meat & Seafood</option>
+      <option value="dairy"            <%= selectedCategory === 'dairy'            ? 'selected' : '' %>>🥛 Dairy</option>
+      <option value="bread-bakery"     <%= selectedCategory === 'bread-bakery'     ? 'selected' : '' %>>🍞 Bread & Bakery</option>
+      <option value="beverages"        <%= selectedCategory === 'beverages'        ? 'selected' : '' %>>🧃 Beverages</option>
+      <option value="coffee"           <%= selectedCategory === 'coffee'           ? 'selected' : '' %>>☕ Coffee</option>
+      <option value="candy"            <%= selectedCategory === 'candy'            ? 'selected' : '' %>>🍬 Candy</option>
+    </select>
+  </div>
+  <div class="form-group" style="margin:0; width:120px;">
+    <label class="form-label">Jumlah</label>
+    <select name="results" class="form-control">
+      <option value="5"  <%= results == 5  ? 'selected' : '' %>>5</option>
+      <option value="10" <%= results == 10 ? 'selected' : '' %>>10</option>
+      <option value="20" <%= results == 20 ? 'selected' : '' %>>20</option>
+    </select>
+  </div>
+  <div style="padding-top:24px;">
+    <button type="submit" class="btn btn-primary">🔍 Filter</button>
+    <a href="/products" class="btn btn-secondary">Reset</a>
+  </div>
+</form>
+
+<!-- Product Grid -->
+<% if (products.length === 0) { %>
+  <div class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>Tidak ada produk ditemukan</h3>
+    <p>Coba ganti filter kategori atau periksa koneksi API.</p>
+    <a href="/products" class="btn btn-primary">Tampilkan Semua</a>
+  </div>
+<% } else { %>
+  <div class="product-grid">
+    <% products.forEach(product => { %>
+      <%
+        const emojis = {
+          'fresh-produce': '🥦',
+          'meat-seafood':  '🥩',
+          'dairy':         '🥛',
+          'bread-bakery':  '🍞',
+          'beverages':     '🧃',
+          'coffee':        '☕',
+          'candy':         '🍬'
+        };
+        const emoji = emojis[product.category] || '🛒';
+      %>
+      <div class="product-card">
+        <span class="product-card-emoji"><%= emoji %></span>
+        <div class="product-card-body">
+          <div class="product-name"><%= product.name %></div>
+          <div class="product-category">📂 <%= product.category %></div>
+          <div style="margin-top:6px;">
+            <% if (product.inStock) { %>
+              <span class="stock-badge in-stock">✅ Tersedia</span>
+            <% } else { %>
+              <span class="stock-badge out-of-stock">❌ Habis</span>
+            <% } %>
+          </div>
+          <div style="margin-top:4px; font-size:0.75rem; color:var(--gray-400);">ID: <strong><%= product.id %></strong></div>
+        </div>
+        <div class="product-actions">
+          <a href="/products/<%= product.id %>" class="btn btn-secondary btn-sm">🔍 Detail</a>
+          <% if (product.inStock && cartId) { %>
+            <form method="POST" action="/cart/items" style="margin:0;">
+              <input type="hidden" name="productId" value="<%= product.id %>">
+              <input type="hidden" name="quantity" value="1">
+              <button type="submit" class="btn btn-primary btn-sm">🛒 Tambah</button>
+            </form>
+          <% } else if (!cartId) { %>
+            <a href="/cart" class="btn btn-secondary btn-sm">Buat Cart</a>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+<% } %>
+
+<%- include('../../partials/footer') %>

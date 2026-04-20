@@ -1,0 +1,50 @@
+<%- include('../../partials/header') %>
+
+<div class="page-header">
+  <a href="/orders" class="btn btn-secondary btn-sm" style="margin-bottom:1rem;">← Kembali ke Pesanan</a>
+  <h1>🔍 Detail Pesanan</h1>
+</div>
+
+<div class="info-box">
+  <p>Endpoint: <code>GET /orders/<%= order.id %></code> — Memerlukan Bearer Token!</p>
+</div>
+
+<div class="card" style="max-width:700px;">
+  <div class="card-header" style="justify-content:space-between;">
+    <h3>📦 Informasi Pesanan</h3>
+    <div style="display:flex; gap:6px;">
+      <a href="/orders/<%= order.id %>/edit" class="btn btn-warning btn-sm">✏️ Edit</a>
+      <form method="POST" action="/orders/<%= order.id %>?_method=DELETE"
+        data-confirm="Hapus pesanan ini?">
+        <button type="submit" class="btn btn-danger btn-sm">🗑️ Hapus</button>
+      </form>
+    </div>
+  </div>
+  <div class="card-body">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+      <div>
+        <div class="detail-label">Order ID</div>
+        <div class="detail-value" style="font-family:monospace; font-size:0.9rem;"><%= order.id %></div>
+      </div>
+      <div>
+        <div class="detail-label">Nama Customer</div>
+        <div class="detail-value"><%= order.customerName || '-' %></div>
+      </div>
+      <div>
+        <div class="detail-label">Cart ID</div>
+        <div class="detail-value" style="font-family:monospace; font-size:0.85rem;"><%= order.cartId || '-' %></div>
+      </div>
+      <div>
+        <div class="detail-label">Komentar</div>
+        <div class="detail-value"><%= order.comment || '(tidak ada komentar)' %></div>
+      </div>
+    </div>
+
+    <div style="margin-top:1.5rem;">
+      <div class="detail-label">Raw JSON Response</div>
+      <pre style="background:var(--gray-900); color:#86efac; padding:1rem; border-radius:8px; font-size:0.78rem; margin-top:6px; overflow-x:auto;"><%= JSON.stringify(order, null, 2) %></pre>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>
